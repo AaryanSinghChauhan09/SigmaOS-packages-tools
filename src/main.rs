@@ -28,9 +28,9 @@ fn main() -> Result<()> {
     println!("Package repository: {} packages", repo.list_packages().len());
     
     // Demonstrate installation
-    let installer = PackageInstaller::default();
+    let mut installer = PackageInstaller::default();
     let mut transaction = installer.create_transaction("test-pkg".to_string());
-    installer.install(&mut transaction)?;
+    installer.install(&mut transaction).map_err(|e| anyhow::anyhow!("{}", e))?;
     println!("Installation transaction completed");
     
     // Demonstrate cache

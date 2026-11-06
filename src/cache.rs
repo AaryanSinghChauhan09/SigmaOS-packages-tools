@@ -97,16 +97,20 @@ impl PackageCache {
 
     fn evict(&mut self, required: u64) -> Result<(), &'static str> {
         // LRU eviction: remove least recently used entries
-        let mut entries: Vec<_> = self.entries.iter().collect();
-        entries.sort_by(|a, b| a.1.accessed.cmp(&b.1.accessed));
-        
+        let mut entries: Vec<(String, u64, u64)> = self
+            .entries
+            .iter()
+            .map(|(k, e)| (k.clone(), e.accessed, e.size))
+            .collect();
+        entries.sort_by(|a, b| a.1.cmp(&b.1));
+
         let mut freed = 0u64;
-        for (key, entry) in entries {
+        for (key, _, size) in entries {
             if freed >= required {
                 break;
             }
-            self.remove(key);
-            freed += entry.size;
+            self.remove(&key);
+            freed += size;
         }
         
         if freed < required {

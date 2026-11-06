@@ -130,7 +130,7 @@ impl DependencyResolver {
             }
         }
 
-        if !resolved.contains(package_name) {
+        if !resolved.contains(&package_name.to_string()) {
             resolved.push(package_name.to_string());
         }
 
